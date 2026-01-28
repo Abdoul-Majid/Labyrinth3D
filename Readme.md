@@ -1,0 +1,3 @@
+# Labyrinth 3D
+Labyrinth 3D
+Labyrinth is an interactive 3D web application built with Three.js that demonstrates the power of modern browser-based graphics. The project features a procedurally or manually navigated maze, showcasing core game development principles such as event-driven programming for character movement, real-time 3D rendering, and dynamic lighting management. By blending smooth player controls with an immersive atmospheric environment, it serves as a practical exploration of spatial logic and GPU-accelerated web experiences.
