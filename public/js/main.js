@@ -81,6 +81,16 @@ const initScene = function() {
     groundMesh.geometry.setAttribute('uv2', groundMesh.geometry.attributes.uv);
     scene.add(groundMesh);
 
+    const ballGeometry = new THREE.SphereGeometry(1, 32, 32);
+    const ballMaterial = new THREE.MeshStandardMaterial({
+        color: 0x00ff00,
+        roughness: 0.3,
+        metalness: 0.1
+    });
+    const ball = new THREE.Mesh(ballGeometry, ballMaterial);
+    ball.position.set(0, 1, 0);
+    scene.add(ball);
+
     function animate() {
         requestAnimationFrame(animate);
         controls.update();
