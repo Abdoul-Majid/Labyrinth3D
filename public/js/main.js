@@ -90,7 +90,7 @@ const initScene = function() {
         metalness: 0.1
     });
     const ball = new THREE.Mesh(ballGeometry, ballMaterial);
-    ball.position.set(0, 1, 0);
+    ball.position.set(0, 0.5, 0);
     scene.add(ball);
 
     function animate() {
