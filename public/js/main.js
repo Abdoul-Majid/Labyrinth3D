@@ -24,6 +24,8 @@ const initScene = function() {
 
     controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
+    controls.maxPolarAngle = Math.PI / 2 - 0.1;
+    controls.target.set(0, 0, 0);
 
     scene.add(new THREE.AmbientLight(0xffffff, 0.3));
     const sunLight = new THREE.DirectionalLight(0xffffff, 2.0);
@@ -75,7 +77,7 @@ const initScene = function() {
         material.needsUpdate = true;
     });
 
-    const groundGeometry = new THREE.PlaneGeometry(planeSize, planeSize, 200, 200);
+    const groundGeometry = new THREE.PlaneGeometry(planeSize, planeSize, 50, 50);
     const groundMesh = new THREE.Mesh(groundGeometry, material);
     groundMesh.rotation.x = -Math.PI / 2;
     groundMesh.geometry.setAttribute('uv2', groundMesh.geometry.attributes.uv);
