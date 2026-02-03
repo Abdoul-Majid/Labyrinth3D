@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { createBox, createCylinder, createRamp, createWall, createArch, createPillar } from './obstacles.js';
 
 var scene, camera, renderer, controls;
 var width = 740;
@@ -83,7 +84,7 @@ const initScene = function() {
     groundMesh.geometry.setAttribute('uv2', groundMesh.geometry.attributes.uv);
     scene.add(groundMesh);
 
-    const ballGeometry = new THREE.SphereGeometry(1, 32, 32);
+    const ballGeometry = new THREE.SphereGeometry(0.5, 32, 32);
     const ballMaterial = new THREE.MeshStandardMaterial({
         color: 0x00ff00,
         roughness: 0.3,
@@ -92,6 +93,13 @@ const initScene = function() {
     const ball = new THREE.Mesh(ballGeometry, ballMaterial);
     ball.position.set(0, 0.5, 0);
     scene.add(ball);
+
+    scene.add(createBox({ width: 2, height: 1.5, depth: 2, color: 0xcc3333, position: new THREE.Vector3(5, 0, 3) }));
+    scene.add(createCylinder({ radius: 0.8, height: 3, color: 0x3366cc, position: new THREE.Vector3(-4, 0, -2) }));
+    scene.add(createRamp({ width: 3, height: 1.5, depth: 2, color: 0xcc9933, position: new THREE.Vector3(-6, 0, 5) }));
+    scene.add(createWall({ width: 6, height: 2, depth: 0.3, color: 0x993399, position: new THREE.Vector3(0, 0, -5) }));
+    scene.add(createArch({ width: 3, height: 3, depth: 1, thickness: 0.4, color: 0x339966, position: new THREE.Vector3(8, 0, -3) }));
+    scene.add(createPillar({ width: 0.6, depth: 0.6, height: 4, color: 0x666666, position: new THREE.Vector3(3, 0, -7) }));
 
     function animate() {
         requestAnimationFrame(animate);
