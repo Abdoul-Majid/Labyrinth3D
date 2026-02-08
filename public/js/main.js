@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader.js';
 import { createBox, createCylinder, createCone, createTorus, createWall, createPillar } from './obstacles.js';
 
 var scene, camera, renderer;
@@ -148,6 +149,13 @@ const initScene = function() {
     const sunLight = new THREE.DirectionalLight(0xffffff, 1.5);
     sunLight.position.set(5, 10, 5);
     scene.add(sunLight);
+
+    const exrLoader = new EXRLoader();
+    exrLoader.load('/images/cloudy.exr', (texture) => {
+        texture.mapping = THREE.EquirectangularReflectionMapping;
+        scene.background = texture;
+        scene.environment = texture;
+    });
 
     const textureLoader = new THREE.TextureLoader();
 
