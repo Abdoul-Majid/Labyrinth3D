@@ -12,6 +12,8 @@ const BALL_SPEED_X = 6;
 const SPAWN_DISTANCE = 35;
 const SPAWN_INTERVAL = 2;
 const LANE_WIDTH = 6;
+const WALL_MARGIN = 1;
+const WALL_THICKNESS = 2;
 
 const keys = { left: false, right: false };
 let ball;
@@ -21,9 +23,11 @@ let clock;
 let gameOver = false;
 let score = 0;
 
-const chunkSize = 40;
+const chunkSize = 30;
 const numChunks = 4;
 let groundChunks = [];
+let leftWallChunks = [];
+let rightWallChunks = [];
 
 const obstacleGenerators = [
     (pos) => createBox({ width: 2, height: 1.5, depth: 2, color: 0xcc3333, position: pos }),
@@ -115,6 +119,16 @@ function updateGround() {
             groundChunks[i].position.z -= totalLength;
         }
     }
+    for (let i = 0; i < leftWallChunks.length; i++) {
+        if (leftWallChunks[i].position.z > ball.position.z + chunkSize) {
+            leftWallChunks[i].position.z -= totalLength;
+        }
+    }
+    for (let i = 0; i < rightWallChunks.length; i++) {
+        if (rightWallChunks[i].position.z > ball.position.z + chunkSize) {
+            rightWallChunks[i].position.z -= totalLength;
+        }
+    }
 }
 
 const initScene = function() {
@@ -181,6 +195,35 @@ const initScene = function() {
         groundChunks.push(mesh);
     }
 
+    const wallDiffuseMap = textureLoader.load('/images/parquet/diagonal_parquet_diff_1k.jpg', (tex) => {
+        tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+        tex.repeat.set(10, 5);
+        tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+        tex.colorSpace = THREE.SRGBColorSpace;
+    });
+
+    const wallMaterial = new THREE.MeshStandardMaterial({
+        map: wallDiffuseMap,
+        roughness: 0.9,
+        metalness: 0.0
+    });
+
+    const wallHeight = 5;
+
+    for (let i = 0; i < numChunks; i++) {
+        const leftWallGeo = new THREE.BoxGeometry(WALL_THICKNESS, wallHeight, chunkSize);
+        const leftWallMesh = new THREE.Mesh(leftWallGeo, wallMaterial);
+        leftWallMesh.position.set(-LANE_WIDTH - WALL_MARGIN - WALL_THICKNESS / 2, wallHeight / 2, -i * chunkSize);
+        scene.add(leftWallMesh);
+        leftWallChunks.push(leftWallMesh);
+
+        const rightWallGeo = new THREE.BoxGeometry(WALL_THICKNESS, wallHeight, chunkSize);
+        const rightWallMesh = new THREE.Mesh(rightWallGeo, wallMaterial);
+        rightWallMesh.position.set(LANE_WIDTH + WALL_MARGIN + WALL_THICKNESS / 2, wallHeight / 2, -i * chunkSize);
+        scene.add(rightWallMesh);
+        rightWallChunks.push(rightWallMesh);
+    }
+
     const ballGeometry = new THREE.SphereGeometry(BALL_RADIUS, 32, 32);
     const ballMaterial = new THREE.MeshStandardMaterial({
         color: 0x00ff00,
@@ -211,7 +254,7 @@ const initScene = function() {
 
             if (keys.left) ball.position.x -= BALL_SPEED_X * delta;
             if (keys.right) ball.position.x += BALL_SPEED_X * delta;
-            ball.position.x = Math.max(-LANE_WIDTH, Math.min(LANE_WIDTH, ball.position.x));
+            ball.position.x = Math.max(-LANE_WIDTH + WALL_MARGIN, Math.min(LANE_WIDTH - WALL_MARGIN, ball.position.x));
 
             ball.rotation.x -= (BALL_SPEED_Z * delta) / BALL_RADIUS;
 
