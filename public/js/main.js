@@ -12,7 +12,7 @@ const BALL_SPEED_X = 6;
 const SPAWN_DISTANCE = 35;
 const SPAWN_INTERVAL = 2;
 const LANE_WIDTH = 6;
-const WALL_MARGIN = 0.5;
+const WALL_MARGIN = 0.45;
 const WALL_THICKNESS = 2;
 
 const keys = { left: false, right: false };
@@ -23,11 +23,14 @@ let clock;
 let gameOver = false;
 let score = 0;
 
-const chunkSize = 30;
+const chunkSize = 27;
 const numChunks = 4;
 let groundChunks = [];
 let leftWallChunks = [];
 let rightWallChunks = [];
+
+const ballBox = new THREE.Box3();
+const obstacleBox = new THREE.Box3();
 
 const obstacleGenerators = [
     (pos) => createBox({ width: 2, height: 1.5, depth: 2, color: 0xcc3333, position: pos }),
@@ -62,11 +65,11 @@ function cleanObstacles() {
 }
 
 function checkCollisions() {
-    const ballBox = new THREE.Box3().setFromObject(ball);
+    ballBox.setFromObject(ball);
     
     for (let i = 0; i < obstacles.length; i++) {
         const obstacle = obstacles[i];
-        const obstacleBox = new THREE.Box3().setFromObject(obstacle);
+        obstacleBox.setFromObject(obstacle);
         
         if (ballBox.intersectsBox(obstacleBox)) {
             triggerGameOver();
@@ -175,7 +178,6 @@ const initScene = function() {
 
     const diffuseMap = textureLoader.load('/images/parquet/diagonal_parquet_diff_1k.jpg', (tex) => {
         tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-        tex.repeat.set(20, 20);
         tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
         tex.colorSpace = THREE.SRGBColorSpace;
     });
@@ -191,16 +193,17 @@ const initScene = function() {
         const mesh = new THREE.Mesh(geo, groundMaterial);
         mesh.rotation.x = -Math.PI / 2;
         mesh.position.z = -i * chunkSize;
+        diffuseMap.repeat.set(20, 20);
         scene.add(mesh);
         groundChunks.push(mesh);
     }
 
-    const wallDiffuseMap = textureLoader.load('/images/parquet/diagonal_parquet_diff_1k.jpg', (tex) => {
-        tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-        tex.repeat.set(10, 5);
-        tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-        tex.colorSpace = THREE.SRGBColorSpace;
-    });
+    const wallDiffuseMap = diffuseMap.clone();
+    wallDiffuseMap.wrapS = wallDiffuseMap.wrapT = THREE.RepeatWrapping;
+    wallDiffuseMap.repeat.set(10, 5);
+    wallDiffuseMap.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    wallDiffuseMap.colorSpace = THREE.SRGBColorSpace;
+    wallDiffuseMap.needsUpdate = true;
 
     const wallMaterial = new THREE.MeshStandardMaterial({
         map: wallDiffuseMap,
