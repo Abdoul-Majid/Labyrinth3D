@@ -12,7 +12,7 @@ const BALL_SPEED_X = 6;
 const SPAWN_DISTANCE = 35;
 const SPAWN_INTERVAL = 2;
 const LANE_WIDTH = 6;
-const WALL_MARGIN = 1;
+const WALL_MARGIN = 0.5;
 const WALL_THICKNESS = 2;
 
 const keys = { left: false, right: false };
